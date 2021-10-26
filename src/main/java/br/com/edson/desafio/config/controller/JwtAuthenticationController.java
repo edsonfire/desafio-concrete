@@ -1,5 +1,8 @@
 package br.com.edson.desafio.config.controller;
 
+import java.time.LocalDateTime;
+import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,6 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 import br.com.edson.desafio.config.JwtTokenUtil;
 import br.com.edson.desafio.config.JwtUserDetailsService;
 import br.com.edson.desafio.config.service.UserService;
+import br.com.edson.desafio.entities.User;
 import br.com.edson.desafio.util.JwtRequest;
 import br.com.edson.desafio.util.JwtResponse;
 import br.com.edson.desafio.util.Message;
@@ -36,7 +40,7 @@ private JwtUserDetailsService userDetailsService;
 @Autowired
 private UserService userService;
 
-@RequestMapping(value = "/authenticate", method = RequestMethod.POST)
+@RequestMapping(value = "/login", method = RequestMethod.POST)
 public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
 	
 	//authenticate(authenticationRequest.getEmail(), authenticationRequest.getPassword());
@@ -48,10 +52,27 @@ public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authe
 	
 	final UserDetails userDetails = userDetailsService.loadUserByUsername(authenticationRequest.getEmail());
 	
-	final String token = jwtTokenUtil.generateToken(userDetails.getUsername());
 	
 	
-	return ResponseEntity.ok(new JwtResponse(token));
+	
+	    Optional<User> user = userService.getByEmail(authenticationRequest.getEmail());
+	    
+	    
+	    if(user.isPresent()) {
+	    	
+	    	
+	    userService.registerLogin(user.get().getEmail());
+	    	
+	    	
+	    	return ResponseEntity.ok(user.get());    	
+	    }else {
+	    	
+	    	return ResponseEntity.ok(new User());
+	    }
+	
+	
+	
+	
 	
 	}catch (BadCredentialsException e) {
 		

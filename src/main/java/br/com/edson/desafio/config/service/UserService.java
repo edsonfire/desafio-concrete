@@ -95,6 +95,24 @@ public Optional<User>  getByEmail(String email) {
 	return user;
 }
 
+
+public void registerLogin(String email) {
+	Optional<User> user = getByEmail(email);
+	
+	
+	if(user.isPresent()) {
+		User userToUpdate = user.get();
+		
+		userToUpdate.setLast_login(LocalDateTime.now());
+		userToUpdate.setToken(jwtTokenUtil.generateToken(email));
+		
+		userRepository.save(userToUpdate);
+		
+	}
+	
+	
+}
+
 	
 	
 	
