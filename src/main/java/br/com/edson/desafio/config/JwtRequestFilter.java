@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -14,6 +15,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
+import br.com.edson.desafio.util.Message;
 import io.jsonwebtoken.ExpiredJwtException;
 
 @Component
@@ -40,11 +42,17 @@ try {
 	username = jwtTokenUtil.getUsernameFromToken(jwtToken);
 } catch (IllegalArgumentException e) {
 	System.out.println("Unable to get JWT Token");
+	response.setStatus(401);
+
 } catch (ExpiredJwtException e) {
 	System.out.println("JWT Token has expired");
+	response.setStatus(401);
+
 }
 } else {
 	logger.warn("JWT Token does not begin with Bearer String");
+	response.setStatus(403);
+
 }
 
 // Tendo o token, valide o.

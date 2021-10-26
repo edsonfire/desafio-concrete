@@ -6,6 +6,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
@@ -74,5 +77,17 @@ public Boolean validateToken(String token, UserDetails userDetails) {
 	final String username = getUsernameFromToken(token);
 return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
 }
+
+
+
+
+public static String getTokenFromRequest(HttpServletRequest request) {
+    String token = request.getHeader("Authorization");
+    if (!token.isBlank() && token.startsWith("Bearer ")) {
+        return token.substring(7, token.length());
+    }
+    return null;
+}
+
 
 }

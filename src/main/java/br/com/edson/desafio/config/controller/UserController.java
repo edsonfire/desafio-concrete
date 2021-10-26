@@ -1,8 +1,11 @@
 package br.com.edson.desafio.config.controller;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -15,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.com.edson.desafio.config.JwtTokenUtil;
 import br.com.edson.desafio.config.service.UserService;
 import br.com.edson.desafio.entities.User;
 import br.com.edson.desafio.util.Message;
@@ -25,6 +29,9 @@ public class UserController {
 	
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private JwtTokenUtil jwtTokenUtil;
 	
 
 	
@@ -70,8 +77,12 @@ public class UserController {
 	}
 	
 	
+	
+	
+	
+	
 	@GetMapping("/users/perfil/{id}")
-	public ResponseEntity<Object> getByID(@PathVariable String id){
+	public ResponseEntity<Object> getByID(@PathVariable String id, HttpServletRequest request){
 		
 		
 		
@@ -80,20 +91,59 @@ public class UserController {
 		Optional<User> user = userService.getOneByID(UUID.fromString(id));
 		
 		if(user.isPresent()) {
+			String tokenFromRequest =jwtTokenUtil.getTokenFromRequest(request);	
+			
+			
+			if(user.get().getToken().equals(tokenFromRequest)) {
+				
+				
+				if(LocalDateTime.now().isAfter(user.get().getLast_login().plusMinutes(30))){
+			
+					Message m = Message.builder()
+							.mensagem("Sessão Expirada")
+							.build();
+				
+				
+				return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(m);
+				
+					
+					
+					
+				}else {
+					
+					return ResponseEntity.ok().body(user);	
+				}
+				
+				
+				
+				
+				
+					
+			}else {
+				
+				Message m = Message.builder()
+						.mensagem("Não Autorizado")
+						.build();
+			
+			
+			return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(m);
+			
+				
+			}
 			
 			
 			
-			return ResponseEntity.ok().body(user);
+			
 		
 		
 		}else {
 		
 			Message m = Message.builder()
-					.mensagem("perfil não encontrado")
+					.mensagem("Usuário não encontrado")
 					.build();
 		
 		
-		return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(m);
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(m);
 		
 		}
 	}
