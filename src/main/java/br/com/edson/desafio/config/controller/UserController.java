@@ -41,27 +41,26 @@ public class UserController {
 		if(userService.existEmail(user.getEmail())) {
 		
 			Message m = Message.builder()
-						.mensagem("email já cadastrado")
+						.mensagem("E-mail já existente")
 						.build();
 			
 			
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(m);
 		}else {
-		/*	Optional<Role> role = roleRepository.findByName(RoleType.ROLE_USER);
-			user.setRoles(Collections.singleton(role.get()));*/
+	
 		User userbanco = userService.create(user);
 		
-		
-		
-				
+			
 
 	
-		
+		/*
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest().path("/{id}")
 				.buildAndExpand(userbanco.getId()).toUri();
 		
 		return ResponseEntity.created(uri).body(userbanco);
+		*/
 		
+		return ResponseEntity.status(HttpStatus.CREATED).body(userbanco);
 		
 		
 		

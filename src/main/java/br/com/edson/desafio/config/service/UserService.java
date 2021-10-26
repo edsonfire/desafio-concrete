@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import br.com.edson.desafio.config.JwtTokenUtil;
 import br.com.edson.desafio.config.repository.UserPhoneRepository;
 import br.com.edson.desafio.config.repository.UserRepository;
 import br.com.edson.desafio.entities.User;
@@ -27,7 +28,8 @@ public class UserService implements UserDetailsService {
 	private UserRepository userRepository;
 	@Autowired
 	private UserPhoneRepository phoneRepository;
-	
+	@Autowired
+	private JwtTokenUtil jwtTokenUtil;
 
 	
 
@@ -50,7 +52,7 @@ public class UserService implements UserDetailsService {
 		user.setModified(date);
 		user.setLast_login(date);
 		
-	///	user.setToken(tokenUtil.generateToken(new Userde user.getEmail())); setar o token
+		user.setToken(jwtTokenUtil.generateToken(user.getEmail()));
 		
 		return userRepository.save(user);
 	}

@@ -16,10 +16,13 @@ import io.jsonwebtoken.SignatureAlgorithm;
 @Component
 public class JwtTokenUtil implements Serializable {
 private static final long serialVersionUID = -2550185165626007488L;
-public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60;
+//public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60;
 
 @Value("${jwt.token.secret}")
 private String secret;
+
+@Value("${jwt.token.expiration}")
+private Long expiration;
 
 //retorna o username do token jwt 
 public String getUsernameFromToken(String token) {
@@ -49,16 +52,18 @@ return expiration.before(new Date());
 }
 
 //gera token para user
-public String generateToken(UserDetails userDetails) {
-	Map<String, Object> claims = new HashMap<>();
-return doGenerateToken(claims, userDetails.getUsername());
+public String generateToken(String email) {
+	
+return doGenerateToken(email);
 }
 
 //Cria o token e devine tempo de expiração pra ele
-private String doGenerateToken(Map<String, Object> claims, String subject) {
-return Jwts.builder().setClaims(claims).setSubject(subject).setIssuedAt(new Date(System.currentTimeMillis()))
-.setExpiration(new Date(System.currentTimeMillis() + JWT_TOKEN_VALIDITY * 1000))
-.signWith(SignatureAlgorithm.HS512, secret).compact();
+private String doGenerateToken(String email) {
+	  return Jwts.builder()
+              .setSubject(email)
+              .setExpiration(new Date(System.currentTimeMillis() + expiration))
+              .signWith(SignatureAlgorithm.HS512, secret.getBytes())
+              .compact();
 }
 
 //valida o token
