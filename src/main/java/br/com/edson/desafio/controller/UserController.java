@@ -1,4 +1,4 @@
-package br.com.edson.desafio.config.controller;
+package br.com.edson.desafio.controller;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,12 +15,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.edson.desafio.config.JwtTokenUtil;
-import br.com.edson.desafio.config.service.UserService;
 import br.com.edson.desafio.entities.User;
+import br.com.edson.desafio.entities.dto.UserDTO;
+import br.com.edson.desafio.security.JwtTokenUtil;
+import br.com.edson.desafio.service.UserService;
 import br.com.edson.desafio.util.Message;
 
 @RestController
@@ -36,9 +36,9 @@ public class UserController {
 
 	
 	@GetMapping
-	public ResponseEntity<List<User>> getAll(){
+	public ResponseEntity<List<UserDTO>> getAll(){
 		
-		List<User> userList = userService.getAll();
+		List<UserDTO> userList = userService.getAll();
 		
 		return ResponseEntity.ok().body(userList);
 	}
@@ -47,10 +47,10 @@ public class UserController {
 	
 	
 	@PostMapping("/users/cadastro")
-	public ResponseEntity<Object> create(@RequestBody User user){
+	public ResponseEntity<Object> create(@RequestBody UserDTO userDTO){
 		
 		
-		if(userService.existEmail(user.getEmail())) {
+		if(userService.existEmail(userDTO.getEmail())) {
 		
 			Message m = Message.builder()
 						.mensagem("E-mail já existente")
@@ -60,7 +60,7 @@ public class UserController {
 			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(m);
 		}else {
 	
-		User userbanco = userService.create(user);
+		UserDTO userbanco = userService.create(userDTO);
 		
 			
 
@@ -88,7 +88,7 @@ public class UserController {
 		
 		
 		
-		Optional<User> user = userService.getOneByID(UUID.fromString(id));
+		Optional<UserDTO> user = userService.getOneByID(UUID.fromString(id));
 		
 		if(user.isPresent()) {
 			String tokenFromRequest =jwtTokenUtil.getTokenFromRequest(request);	

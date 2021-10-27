@@ -15,6 +15,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import br.com.edson.desafio.security.JwtAuthenticationEntryPoint;
+import br.com.edson.desafio.security.JwtRequestFilter;
+
 @Configuration
 @EnableWebSecurity
 @EnableGlobalMethodSecurity(prePostEnabled = true)
@@ -47,14 +50,26 @@ return super.authenticationManagerBean();
 
 @Override
 protected void configure(HttpSecurity httpSecurity) throws Exception {
-httpSecurity.csrf().disable()
-// Não cheque essas requisições
-.authorizeRequests().antMatchers("/login","/v2/api-docs", "/configuration/ui", "/swagger-resources/**", "/configuration/**", "/swagger-ui.html", "/webjars/**", "/h2-console", "/desafio/api/v1/users/cadastro").permitAll().
-// Qualquer outra requisição deve ser checada
-anyRequest().authenticated().and().
-exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
-.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+httpSecurity
+.cors()
+	.and()
+		.csrf()
+			.disable()//disabled para fins do desafio
+
+			.authorizeRequests().antMatchers("/login", "/desafio/api/v1/users/cadastro").permitAll().
+ 
+			anyRequest().authenticated()
+
+			
+			
+.and()
+	.exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
+
+	.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+
 httpSecurity.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+
+
 }
 
 }

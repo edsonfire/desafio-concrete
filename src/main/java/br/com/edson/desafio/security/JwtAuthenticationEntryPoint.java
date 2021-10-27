@@ -1,4 +1,4 @@
-package br.com.edson.desafio.config;
+package br.com.edson.desafio.security;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.Serializable;
@@ -35,10 +35,7 @@ AuthenticationException authException) throws IOException {
      mapper.writeValue(out, data);
      out.flush();
 	
-	
-	
-	
-//response.sendError(HttpServletResponse.SC_UNAUTHORIZED, "Não Autorizado");
+
 }
 
 }

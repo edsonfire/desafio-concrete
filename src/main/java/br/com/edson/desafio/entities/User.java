@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,6 +17,8 @@ import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.Table;
 
+import br.com.edson.desafio.entities.dto.UserDTO;
+import br.com.edson.desafio.entities.dto.UserPhoneDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -47,14 +50,24 @@ public class User {
 			
 			)
 	private Set<UserPhone> phones = new HashSet<>();
-	
-   /*
     
-    @ManyToMany(fetch = FetchType.EAGER)
-	@JoinTable(name = "users_roles", 
-		joinColumns = @JoinColumn(name = "user_id"), 
-		inverseJoinColumns = @JoinColumn(name = "role_id")
-	)
-	private Set<Role> roles = new HashSet<>();
-*/
+    
+    
+    	public User(UserDTO userDTO) {
+		
+		this.id = userDTO.getId();
+		this.name = userDTO.getName();
+		this.email = userDTO.getEmail();
+		this.password = userDTO.getPassword();
+		this.created = userDTO.getCreated();
+		this.modified = userDTO.getModified();
+		this.last_login = userDTO.getLast_login();
+		this.token  = userDTO.getToken();
+		this.phones = new HashSet<UserPhone>(userDTO.getPhones().stream().map(x -> new UserPhone(x)).collect(Collectors.toList()));
+		
+	}
+    
+    
+    
 }
+	

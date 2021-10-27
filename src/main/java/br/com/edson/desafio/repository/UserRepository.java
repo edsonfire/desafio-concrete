@@ -1,4 +1,4 @@
-package br.com.edson.desafio.config.repository;
+package br.com.edson.desafio.repository;
 
 import java.util.Optional;
 import java.util.UUID;

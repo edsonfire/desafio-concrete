@@ -1,4 +1,4 @@
-package br.com.edson.desafio.config;
+package br.com.edson.desafio.security;
 import java.util.ArrayList;
 import java.util.Optional;
 
@@ -9,7 +9,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import br.com.edson.desafio.config.service.UserService;
+import br.com.edson.desafio.service.UserService;
 
 @Service
 public class JwtUserDetailsService implements UserDetailsService {
@@ -19,7 +19,7 @@ public class JwtUserDetailsService implements UserDetailsService {
 	
 	@Override
 	public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-		Optional<br.com.edson.desafio.entities.User> user = userService.getByEmail(email);
+		Optional<br.com.edson.desafio.entities.User> user = userService.findByEmailtoAuthenticate(email);
 		
 		if(user.isPresent()) {
 			

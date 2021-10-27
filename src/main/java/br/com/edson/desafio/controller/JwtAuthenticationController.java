@@ -1,4 +1,4 @@
-package br.com.edson.desafio.config.controller;
+package br.com.edson.desafio.controller;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -17,16 +17,20 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.com.edson.desafio.config.JwtTokenUtil;
-import br.com.edson.desafio.config.JwtUserDetailsService;
-import br.com.edson.desafio.config.service.UserService;
 import br.com.edson.desafio.entities.User;
+import br.com.edson.desafio.entities.dto.UserDTO;
+import br.com.edson.desafio.security.JwtTokenUtil;
+import br.com.edson.desafio.security.JwtUserDetailsService;
+import br.com.edson.desafio.service.UserService;
 import br.com.edson.desafio.util.JwtRequest;
 import br.com.edson.desafio.util.JwtResponse;
 import br.com.edson.desafio.util.Message;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @RestController
 @CrossOrigin
+@Api(value = "login")
 public class JwtAuthenticationController {
 
 @Autowired
@@ -40,10 +44,11 @@ private JwtUserDetailsService userDetailsService;
 @Autowired
 private UserService userService;
 
+@ApiOperation(value ="Efetua o login, e retorna um token para acesso aos endpoints")
 @RequestMapping(value = "/login", method = RequestMethod.POST)
 public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
 	
-	//authenticate(authenticationRequest.getEmail(), authenticationRequest.getPassword());
+	
 	
 	try {	
 	authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(authenticationRequest.getEmail(), authenticationRequest.getPassword()));
@@ -55,19 +60,19 @@ public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authe
 	
 	
 	
-	    Optional<User> user = userService.getByEmail(authenticationRequest.getEmail());
+	    Optional<UserDTO> userDTO = userService.getByEmail(authenticationRequest.getEmail());
 	    
 	    
-	    if(user.isPresent()) {
+	    if(userDTO.isPresent()) {
 	    	
 	    	
-	    userService.registerLogin(user.get().getEmail());
+	        UserDTO userToReturn  =  userService.registerLogin(userDTO.get().getEmail());
 	    	
 	    	
-	    	return ResponseEntity.ok(user.get());    	
+	    	return ResponseEntity.ok(userToReturn);    	
 	    }else {
 	    	
-	    	return ResponseEntity.ok(new User());
+	    	return ResponseEntity.ok(new UserDTO());
 	    }
 	
 	
@@ -83,15 +88,4 @@ public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authe
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new Message("Usuário e/ou senha inválidos"));
 		}
 	}
-}
-/*
-private void authenticate(String username, String password) throws Exception {
-try {
-	authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(username, password));
-} catch (DisabledException e) {
-	throw new Exception("USER_DISABLED", e);
-} catch (BadCredentialsException e) {
-	throw new Exception("INVALID_CREDENTIALS", e);
-}
-}*/
-}
+}}

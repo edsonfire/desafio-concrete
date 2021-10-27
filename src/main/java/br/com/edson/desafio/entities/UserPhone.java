@@ -9,6 +9,7 @@ import javax.persistence.Id;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import br.com.edson.desafio.entities.dto.UserPhoneDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -27,5 +28,16 @@ public class UserPhone {
 	private UUID id;
 	private String ddd;
 	private String number;
+	
+	
+	public UserPhone(UserPhoneDTO phoneDTO) {
+		this.id = phoneDTO.getId();
+		this.ddd = phoneDTO.getDdd();
+		this.number = phoneDTO.getNumber();
+	}
+	
+	
+	
+	
 	
 }

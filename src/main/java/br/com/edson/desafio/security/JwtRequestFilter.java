@@ -1,4 +1,4 @@
-package br.com.edson.desafio.config;
+package br.com.edson.desafio.security;
 import java.io.IOException;
 
 import javax.servlet.FilterChain;
@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -35,7 +36,7 @@ throws ServletException, IOException {
 String username = null;
 String jwtToken = null;
 
-// JWT Token está no form "Bearer token". Remova a palavra Bearer e pegue somente o Token
+
 if (requestTokenHeader != null && requestTokenHeader.startsWith("Bearer ")) {
 	jwtToken = requestTokenHeader.substring(7);
 try {
@@ -55,19 +56,27 @@ try {
 
 }
 
-// Tendo o token, valide o.
+
 if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-	UserDetails userDetails = this.jwtUserDetailsService.loadUserByUsername(username);
+	
+	try {
+				UserDetails userDetails = this.jwtUserDetailsService.loadUserByUsername(username);
+				if (jwtTokenUtil.validateToken(jwtToken, userDetails)) {
+					UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
+							userDetails, null, userDetails.getAuthorities());
+					usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+			
+				SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
+				}
+	
+	
+	
+	}catch (UsernameNotFoundException e) {
+		response.setStatus(HttpStatus.NOT_FOUND.value());
+	}
 
 
 
-if (jwtTokenUtil.validateToken(jwtToken, userDetails)) {
-	UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(
-			userDetails, null, userDetails.getAuthorities());
-	usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-
-SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-}
 }
 chain.doFilter(request, response);
 }

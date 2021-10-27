@@ -1,9 +1,12 @@
-package br.com.edson.desafio.config.service;
+package br.com.edson.desafio.service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -12,11 +15,12 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
-import br.com.edson.desafio.config.JwtTokenUtil;
-import br.com.edson.desafio.config.repository.UserPhoneRepository;
-import br.com.edson.desafio.config.repository.UserRepository;
 import br.com.edson.desafio.entities.User;
 import br.com.edson.desafio.entities.UserPhone;
+import br.com.edson.desafio.entities.dto.UserDTO;
+import br.com.edson.desafio.repository.UserPhoneRepository;
+import br.com.edson.desafio.repository.UserRepository;
+import br.com.edson.desafio.security.JwtTokenUtil;
 import br.com.edson.desafio.util.UserDetailImpl;
 
 
@@ -37,7 +41,12 @@ public class UserService implements UserDetailsService {
 	private PasswordEncoder passwordEncoder;
 	
 	
-	public User create(User user) {
+	public UserDTO create(UserDTO userDTO) {
+		
+		
+		User user = new User(userDTO);
+		
+		
 		
 		
 		for(UserPhone phone: user.getPhones()) 
@@ -54,26 +63,33 @@ public class UserService implements UserDetailsService {
 		
 		user.setToken(jwtTokenUtil.generateToken(user.getEmail()));
 		
-		return userRepository.save(user);
+		return new UserDTO(userRepository.save(user));
 	}
 	
 	
 	
-	public Optional<User> getOneByToken(String token) {
+	public Optional<UserDTO> getOneByToken(String token) {
 		
 		Optional<User> user = userRepository.findByToken(token);
+		Optional<UserDTO> userDTO = generateUserDTOOptional(user);
 		
-		return user;
+		
+		
+		
+		return userDTO;
 	}
+
+
 	
 	
 	
-	
-	public Optional<User> getOneByID(UUID id) {
+	public Optional<UserDTO> getOneByID(UUID id) {
 		
 		Optional<User> user = userRepository.findById(id);
 		
-		return user;
+		Optional<UserDTO> userDTO = generateUserDTOOptional(user);
+		
+		return userDTO;
 	}
 	
 	
@@ -88,17 +104,32 @@ public boolean  existEmail(String email) {
 	
 
 
-public Optional<User>  getByEmail(String email) {
+public Optional<UserDTO>  getByEmail(String email) {
 	
 	Optional<User> user = userRepository.findByEmail(email);
+	Optional<UserDTO> userDTO = generateUserDTOOptional(user);
+	
+	return userDTO;
+}
+
+
+
+
+public Optional<User>  findByEmailtoAuthenticate(String email) {
+	
+	Optional<User> user = userRepository.findByEmail(email);
+	
 	
 	return user;
 }
 
 
-public void registerLogin(String email) {
-	Optional<User> user = getByEmail(email);
-	
+
+
+
+public UserDTO registerLogin(String email) {
+	Optional<User> user =  userRepository.findByEmail(email);
+	UserDTO userDTO = new UserDTO();
 	
 	if(user.isPresent()) {
 		User userToUpdate = user.get();
@@ -107,18 +138,27 @@ public void registerLogin(String email) {
 		userToUpdate.setToken(jwtTokenUtil.generateToken(email));
 		
 		userRepository.save(userToUpdate);
+	
+		userDTO  = new UserDTO(userToUpdate);
+		
 		
 	}
 	
-	
+	return userDTO;
 }
 
 	
 	
 	
-	public List<User> getAll(){
+	public List<UserDTO> getAll(){
 		
-		return userRepository.findAll();
+		
+		List<UserDTO> userDTOList = new ArrayList<UserDTO>();
+		
+		userDTOList =  userRepository.findAll().stream().map(x -> new UserDTO(x)).collect(Collectors.toList());
+		
+		
+		return userDTOList;
 	}
 
 
@@ -137,4 +177,22 @@ public void registerLogin(String email) {
 	
 	
 	
+
+
+
+
+
+private Optional<UserDTO> generateUserDTOOptional(Optional<User> user) {
+	Optional<UserDTO> userDTO;
+	
+	if(user.isPresent()) {
+	
+	
+		userDTO = Optional.ofNullable(new UserDTO(user.get()));
+	}else {
+		userDTO = Optional.ofNullable(null);
+	}
+	return userDTO;
+}
+
 }
