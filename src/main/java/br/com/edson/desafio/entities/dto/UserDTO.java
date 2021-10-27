@@ -10,6 +10,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 
 import br.com.edson.desafio.entities.User;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -35,7 +36,7 @@ public class UserDTO {
     	      pattern = "dd-MM-yyyy hh:mm:ss")
     private LocalDateTime last_login;
     private String token;
-   
+
     private Set<UserPhoneDTO> phones = new HashSet<>();
 
 	public UserDTO(User user) {

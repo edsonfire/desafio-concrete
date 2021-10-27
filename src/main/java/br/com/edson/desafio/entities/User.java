@@ -49,6 +49,7 @@ public class User {
 				inverseJoinColumns = @JoinColumn(name="phone_id")
 			
 			)
+    @Builder.Default
 	private Set<UserPhone> phones = new HashSet<>();
     
     
