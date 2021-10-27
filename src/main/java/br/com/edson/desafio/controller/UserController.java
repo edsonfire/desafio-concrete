@@ -53,7 +53,7 @@ public class UserController {
 		if(userService.existEmail(userDTO.getEmail())) {
 		
 			Message m = Message.builder()
-						.mensagem("E-mail já existente")
+						.mensagem("E-mail ja existente")
 						.build();
 			
 			
@@ -100,7 +100,7 @@ public class UserController {
 				if(LocalDateTime.now().isAfter(user.get().getLast_login().plusMinutes(30))){
 			
 					Message m = Message.builder()
-							.mensagem("Sessão Expirada")
+							.mensagem("Sessao Expirada")
 							.build();
 				
 				
@@ -122,7 +122,7 @@ public class UserController {
 			}else {
 				
 				Message m = Message.builder()
-						.mensagem("Não Autorizado")
+						.mensagem("Nao Autorizado")
 						.build();
 			
 			
@@ -139,7 +139,7 @@ public class UserController {
 		}else {
 		
 			Message m = Message.builder()
-					.mensagem("Usuário não encontrado")
+					.mensagem("Usuario nao encontrado")
 					.build();
 		
 		

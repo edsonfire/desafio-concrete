@@ -25,7 +25,7 @@ public class UserDetailImpl implements UserDetails {
 	
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		// retornando lista vazia por não haver necessidade de implementar para o desafio
+	
 		return new ArrayList<>();
 	}
 
@@ -42,25 +42,25 @@ public class UserDetailImpl implements UserDetails {
 
 	@Override
 	public boolean isAccountNonExpired() {
-		// não implementado para fins do desafio
+	
 		return true;
 	}
 
 	@Override
 	public boolean isAccountNonLocked() {
-		// não implementado para fins do desafio
+	
 		return true;
 	}
 
 	@Override
 	public boolean isCredentialsNonExpired() {
-		// não implementado para fins do desafio
+	
 		return true;
 	}
 
 	@Override
 	public boolean isEnabled() {
-		// não implementado para fins do desafio
+	
 		return true;
 	}
 	

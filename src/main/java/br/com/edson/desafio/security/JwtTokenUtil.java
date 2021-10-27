@@ -28,12 +28,12 @@ private String secret;
 @Value("${jwt.token.expiration}")
 private Long expiration;
 
-//retorna o username do token jwt 
+ 
 public String getUsernameFromToken(String token) {
 return getClaimFromToken(token, Claims::getSubject);
 }
 
-//retorna expiration date do token jwt 
+ 
 public Date getExpirationDateFromToken(String token) {
 return getClaimFromToken(token, Claims::getExpiration);
 }
@@ -44,26 +44,26 @@ return claimsResolver.apply(claims);
 
 }
 
-//para retornar qualquer informação do token nos iremos precisar da secret key
+
 private Claims getAllClaimsFromToken(String token) {
 	
 	 
 	return Jwts.parser().setSigningKey(TextCodec.BASE64URL.encode(secret)).parseClaimsJws(token).getBody();
 }
 
-//check if the token has expired
+
 private Boolean isTokenExpired(String token) {
 	final Date expiration = getExpirationDateFromToken(token);
 return expiration.before(new Date());
 }
 
-//gera token para user
+
 public String generateToken(String email) {
 	
 return doGenerateToken(email);
 }
 
-//Cria o token e devine tempo de expiração pra ele
+
 private String doGenerateToken(String email) {
 	  return Jwts.builder()
               .setSubject(email)
@@ -72,7 +72,7 @@ private String doGenerateToken(String email) {
               .compact();
 }
 
-//valida o token
+
 public Boolean validateToken(String token, UserDetails userDetails) {
 	final String username = getUsernameFromToken(token);
 return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));

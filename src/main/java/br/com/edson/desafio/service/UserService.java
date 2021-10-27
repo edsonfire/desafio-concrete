@@ -168,7 +168,7 @@ public UserDTO registerLogin(String email) {
 		
 		Optional<User> user = userRepository.findByEmail(username);
 		if(user.isEmpty()) {
-		throw new UsernameNotFoundException("Usuário: ["+username+"] não encontrado");
+		throw new UsernameNotFoundException("Usuario: ["+username+"] nao encontrado");
 		}
 		
 		return new UserDetailImpl(user);

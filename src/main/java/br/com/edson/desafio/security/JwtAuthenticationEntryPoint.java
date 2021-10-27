@@ -27,7 +27,7 @@ AuthenticationException authException) throws IOException {
 	
 
 	 Map<String, Object> data = new HashMap<>();
-     data.put("mensagem", "Não Autorizado");
+     data.put("mensagem", "Nao Autorizado");
     
 
      OutputStream out = response.getOutputStream();
