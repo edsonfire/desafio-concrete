@@ -12,7 +12,6 @@ jar {
 }
 
 
-
 group = 'br.com.edson.desafio'
 version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '11'
